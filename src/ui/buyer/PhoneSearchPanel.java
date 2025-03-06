@@ -21,11 +21,14 @@ public class PhoneSearchPanel extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
     private JButton backButton;
+    private long buyerId;
 
     // 컬럼 이름
     private String[] columnNames = {"제품ID", "제조사", "제품명", "CPU", "RAM(GB)", "용량(GB)", "화면크기(인치)", "제조년도", "가격", "재고수량", "판매수량"};
 
-    public PhoneSearchPanel(ActionListener backListener) {
+    public PhoneSearchPanel(long buyerId, ActionListener backListener) {
+        this.buyerId = buyerId;
+
         setLayout(new BorderLayout());
 
         // 상단 영역: 뒤로가기 버튼 및 검색 영역
@@ -115,10 +118,17 @@ public class PhoneSearchPanel extends JPanel {
                         for (int i = 0; i < tableModel.getColumnCount(); i++) {
                             rowData[i] = tableModel.getValueAt(modelRow, i);
                         }
-                        new BuyerPhoneDetailDialog((Frame) SwingUtilities.getWindowAncestor(PhoneSearchPanel.this), rowData)
+                        new BuyerPhoneDetailDialog((Frame) SwingUtilities.getWindowAncestor(PhoneSearchPanel.this), buyerId, rowData)
                                 .setVisible(true);
                     }
                 }
+            }
+        });
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                loadTableData(null, null); // 패널이 다시 보일 때마다 데이터를 새로 로드
             }
         });
     }

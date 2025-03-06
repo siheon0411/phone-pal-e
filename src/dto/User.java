@@ -19,7 +19,6 @@ public class User {
         return userId;
     }
 
-    // auto-increment
     public void setUserId(long userId) {
         this.userId = userId;
     }
@@ -44,7 +43,6 @@ public class User {
         return createdAt;
     }
 
-    // auto-created default by NOW() in mysql
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }

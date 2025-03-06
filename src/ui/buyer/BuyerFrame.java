@@ -55,18 +55,15 @@ public class BuyerFrame extends JFrame {
 
         cardPanel.add(mainMenuPanel, "MAIN");
 
-        // 2. 핸드폰 검색 패널
-        PhoneSearchPanel phoneSearchPanel = new PhoneSearchPanel(e -> cardLayout.show(cardPanel, "MAIN"));
+        // 핸드폰 검색 패널
+        PhoneSearchPanel phoneSearchPanel = new PhoneSearchPanel(user.getUserId(), e -> cardLayout.show(cardPanel, "MAIN"));
         cardPanel.add(phoneSearchPanel, "PHONE_SEARCH");
 
-        // 3. 장바구니 및 구매이력 패널은 추후 구현 (여기서는 placeholder)
-        JPanel cartPanel = new JPanel(new BorderLayout());
-        cartPanel.add(new JLabel("장바구니 페이지", SwingConstants.CENTER), BorderLayout.CENTER);
-        JButton cartBackButton = new JButton("뒤로가기");
-        cartBackButton.addActionListener(e -> cardLayout.show(cardPanel, "MAIN"));
-        cartPanel.add(cartBackButton, BorderLayout.SOUTH);
+        // 장바구니 패널
+        CartPanel cartPanel = new CartPanel(user.getUserId(), e -> cardLayout.show(cardPanel, "MAIN"));
         cardPanel.add(cartPanel, "CART");
 
+        // 구매이력 패널 추후 구현 (여기서는 placeholder)
         JPanel purchaseHistoryPanel = new JPanel(new BorderLayout());
         purchaseHistoryPanel.add(new JLabel("구매이력 페이지", SwingConstants.CENTER), BorderLayout.CENTER);
         JButton phBackButton = new JButton("뒤로가기");
@@ -82,10 +79,4 @@ public class BuyerFrame extends JFrame {
         purchaseHistoryButton.addActionListener(e -> cardLayout.show(cardPanel, "PURCHASE_HISTORY"));
     }
 
-    public static void main(String[] args) {
-        // 테스트용 더미 구매자
-        User dummyUser = new User("김철수", "buyer");
-        dummyUser.setUserId(2);
-        SwingUtilities.invokeLater(() -> new BuyerFrame(dummyUser).setVisible(true));
-    }
 }

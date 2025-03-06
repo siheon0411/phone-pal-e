@@ -1,8 +1,12 @@
 package ui.buyer;
 
+import dao.CartDao;
+import dto.Cart;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.LocalDateTime;
 
 public class BuyerPhoneDetailDialog extends JDialog {
     private JLabel idLabel;
@@ -22,7 +26,7 @@ public class BuyerPhoneDetailDialog extends JDialog {
      * @param rowData 선택된 행의 데이터 배열
      *                {제품ID, 제조사, 제품명, CPU, RAM, 용량, 화면크기, 제조년도, 가격, 재고수량, 판매수량}
      */
-    public BuyerPhoneDetailDialog(Frame parent, Object[] rowData) {
+    public BuyerPhoneDetailDialog(Frame parent, long buyerId, Object[] rowData) {
         super(parent, "제품 상세 정보", true);
         setSize(400, 600);
         setLocationRelativeTo(parent);
@@ -132,8 +136,14 @@ public class BuyerPhoneDetailDialog extends JDialog {
 
         addToCartButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                // 실제 장바구니 추가 로직(DAO 연동 등)은 추후 구현
-                JOptionPane.showMessageDialog(BuyerPhoneDetailDialog.this, "해당 제품이 장바구니에 담겼습니다.");
+                long phoneId = Long.parseLong(idLabel.getText().trim());
+                CartDao cartDao = new CartDao();
+                int result = cartDao.insertCart(buyerId, phoneId);
+                if(result > 0) {
+                    JOptionPane.showMessageDialog(BuyerPhoneDetailDialog.this, "해당 제품이 장바구니에 담겼습니다.");
+                } else {
+                    JOptionPane.showMessageDialog(BuyerPhoneDetailDialog.this, "해당 제품이 이미 장바구니에 있거나, 장바구니 담기에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                }
                 dispose();
             }
         });

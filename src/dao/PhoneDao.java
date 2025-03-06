@@ -78,7 +78,7 @@ public class PhoneDao {
         return ret;
     }
 
-    public int deletePhone(int phoneId) {
+    public int deletePhone(long phoneId) {
         int ret = -1;
         String sql = "delete from phone where phone_id = ?; ";
 
@@ -89,7 +89,7 @@ public class PhoneDao {
             con = DBManager.getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setInt(1, phoneId);
+            pstmt.setLong(1, phoneId);
 
             ret = pstmt.executeUpdate();
 
@@ -139,6 +139,43 @@ public class PhoneDao {
         }
 
         return list;
+    }
+
+    public Phone getPhoneById(long phoneId) {
+        Phone phone = null;
+        String sql = "SELECT * FROM phone WHERE phone_id = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = DBManager.getConnection();
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setLong(1, phoneId);
+
+            rs = pstmt.executeQuery();
+            if(rs.next()) {
+                phone = new Phone();
+                phone.setPhoneId(rs.getInt("phone_id"));
+                phone.setManufacturer(rs.getString("manufacturer"));
+                phone.setPhoneName(rs.getString("phone_name"));
+                phone.setCpu(rs.getString("cpu"));
+                phone.setRam(rs.getInt("ram"));
+                phone.setStorage(rs.getInt("storage"));
+                phone.setScreenSize(rs.getDouble("screen_size"));
+                phone.setManufacturedYear(rs.getInt("manufactured_year"));
+                phone.setPrice(rs.getInt("price"));
+                phone.setStockQuantity(rs.getInt("stock_quantity"));
+                phone.setSalesQuantity(rs.getInt("sales_quantity"));
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBManager.releaseConnection(rs, pstmt, con);
+        }
+        return phone;
     }
 
 
