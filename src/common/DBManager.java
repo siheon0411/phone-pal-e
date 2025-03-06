@@ -20,7 +20,15 @@ public class DBManager {
 		
 		return con;		
 	}
-	
+
+	public static void releaseConnection(Connection con) {
+		try {
+			if (con != null) con.close();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void releaseConnection(PreparedStatement pstmt, Connection con) {
 		try {
 			if (pstmt != null) pstmt.close();

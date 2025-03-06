@@ -10,6 +10,7 @@ import dto.Cart;
 import dto.Phone;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartPanel extends JPanel {
@@ -37,7 +38,7 @@ public class CartPanel extends JPanel {
 
         // 중앙: 장바구니 내용을 표시할 테이블
         // 컬럼: 제품ID, 제조사, 제품명, RAM(GB), 용량(GB), 가격, 수량, 총액
-        String[] columnNames = {"제품ID", "제조사", "제품명", "RAM(GB)", "용량(GB)", "가격", "수량", "총액"};
+        String[] columnNames = {"제품ID", "제조사", "제품명", "RAM(GB)", "용량(GB)", "가격", "수량", "총액", "CID"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -50,7 +51,7 @@ public class CartPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         // 하단: "구입하기" 버튼
-        purchaseButton = new JButton("구입하기");
+        purchaseButton = new JButton("선택한 제품 구입하기");
         add(purchaseButton, BorderLayout.SOUTH);
 
         // 테이블 모델 리스너 추가: 수량 변경 시 총액 업데이트
@@ -93,6 +94,7 @@ public class CartPanel extends JPanel {
                 Object storageObj = tableModel.getValueAt(modelRow, 4);
                 Object priceObj = tableModel.getValueAt(modelRow, 5);
                 Object quantityObj = tableModel.getValueAt(modelRow, 6);
+                Object cartIdObj = tableModel.getValueAt(modelRow, 8);
 
                 // 파싱
                 long phoneId = Long.parseLong(prodIdObj.toString());
@@ -109,11 +111,12 @@ public class CartPanel extends JPanel {
                     return;
                 }
                 int total = price * quantity;
+                long cartId = Long.parseLong(cartIdObj.toString());
 
                 // 구매 확인 다이얼로그 띄우기
                 PurchaseConfirmationDialog dialog = new PurchaseConfirmationDialog(
                         (Frame) SwingUtilities.getWindowAncestor(CartPanel.this),
-                        phoneId, manufacturer, phoneName, ram, storage, price, quantity, total
+                        cartId, buyerId, phoneId, manufacturer, phoneName, ram, storage, price, quantity, total
                 );
                 dialog.setVisible(true);
             }
@@ -134,6 +137,7 @@ public class CartPanel extends JPanel {
         for(Cart cart : cartItems) {
             Phone phone = phoneDao.getPhoneById(cart.getPhoneId());
             if(phone != null) {
+                long cartId = cart.getCartId();
                 int quantity = cart.getQuantity();
                 int price = phone.getPrice();
                 int total = price * quantity;
@@ -145,7 +149,8 @@ public class CartPanel extends JPanel {
                         phone.getStorage(),
                         price,
                         quantity,
-                        total
+                        total,
+                        cartId
                 };
                 tableModel.addRow(row);
             }

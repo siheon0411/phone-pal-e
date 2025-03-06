@@ -65,6 +65,31 @@ public class CartDao {
         return ret;
     }
 
+    // Connection을 인자로 받도록 오버로드
+    public int deleteCart(Connection con, long cartId) {
+        int ret = -1;
+
+        String sql = "delete from cart where cart_id = ?; ";
+
+        PreparedStatement pstmt = null;
+
+        try {
+            con = DBManager.getConnection();
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setLong(1, cartId);
+
+            ret = pstmt.executeUpdate();
+
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }finally {
+            DBManager.releaseConnection(pstmt, con);
+        }
+
+        return ret;
+    }
+
     public List<Cart> listCartByBuyerId(long buyerId) {
         List<Cart> list = new ArrayList<>();
         String sql = "SELECT * FROM cart WHERE buyer_id = ?";

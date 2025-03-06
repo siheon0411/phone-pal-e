@@ -2,7 +2,7 @@ package dto;
 
 import java.time.LocalDateTime;
 
-public class PurchaseHistory {
+public class PurchaseHistoryDetail {
     private long purchaseId;
     private long buyerId;
     private long phoneId;
@@ -10,16 +10,15 @@ public class PurchaseHistory {
     private int purchaseQuantity;
     private LocalDateTime purchasedAt;
 
-    public PurchaseHistory() {}
+    // Phone 정보 추가
+    private String manufacturer;
+    private String phoneName;
+    private int ram;
+    private int storage;
 
-    public PurchaseHistory(long purchaseId, long buyerId, long phoneId, int purchasePrice, int purchaseQuantity, LocalDateTime purchasedAt) {
-        this.purchaseId = purchaseId;
-        this.buyerId = buyerId;
-        this.phoneId = phoneId;
-        this.purchasePrice = purchasePrice;
-        this.purchaseQuantity = purchaseQuantity;
-        this.purchasedAt = purchasedAt;
-    }
+    public PurchaseHistoryDetail() {}
+
+    // getters and setters
 
     public long getPurchaseId() {
         return purchaseId;
@@ -67,5 +66,37 @@ public class PurchaseHistory {
 
     public void setPurchasedAt(LocalDateTime purchasedAt) {
         this.purchasedAt = purchasedAt;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getPhoneName() {
+        return phoneName;
+    }
+
+    public void setPhoneName(String phoneName) {
+        this.phoneName = phoneName;
+    }
+
+    public int getRam() {
+        return ram;
+    }
+
+    public void setRam(int ram) {
+        this.ram = ram;
+    }
+
+    public int getStorage() {
+        return storage;
+    }
+
+    public void setStorage(int storage) {
+        this.storage = storage;
     }
 }

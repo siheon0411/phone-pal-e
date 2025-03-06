@@ -63,13 +63,17 @@ public class BuyerFrame extends JFrame {
         CartPanel cartPanel = new CartPanel(user.getUserId(), e -> cardLayout.show(cardPanel, "MAIN"));
         cardPanel.add(cartPanel, "CART");
 
-        // 구매이력 패널 추후 구현 (여기서는 placeholder)
-        JPanel purchaseHistoryPanel = new JPanel(new BorderLayout());
-        purchaseHistoryPanel.add(new JLabel("구매이력 페이지", SwingConstants.CENTER), BorderLayout.CENTER);
-        JButton phBackButton = new JButton("뒤로가기");
-        phBackButton.addActionListener(e -> cardLayout.show(cardPanel, "MAIN"));
-        purchaseHistoryPanel.add(phBackButton, BorderLayout.SOUTH);
-        cardPanel.add(purchaseHistoryPanel, "PURCHASE_HISTORY");
+        // 구매이력 패널
+        PurchaseHistoryPanel phPanel = new PurchaseHistoryPanel(user.getUserId(), e -> cardLayout.show(cardPanel, "MAIN"));
+        cardPanel.add(phPanel, "PURCHASE_HISTORY");
+
+        // // 구매이력 패널 추후 구현 (여기서는 placeholder)
+        // JPanel purchaseHistoryPanel = new JPanel(new BorderLayout());
+        // purchaseHistoryPanel.add(new JLabel("구매이력 페이지", SwingConstants.CENTER), BorderLayout.CENTER);
+        // JButton phBackButton = new JButton("뒤로가기");
+        // phBackButton.addActionListener(e -> cardLayout.show(cardPanel, "MAIN"));
+        // purchaseHistoryPanel.add(phBackButton, BorderLayout.SOUTH);
+        // cardPanel.add(purchaseHistoryPanel, "PURCHASE_HISTORY");
 
         add(cardPanel);
 

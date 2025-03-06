@@ -1,11 +1,15 @@
 package ui.buyer;
 
+import dao.CartDao;
+import dao.PurchaseHistoryDao;
+import dto.PurchaseHistory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class PurchaseConfirmationDialog extends JDialog {
-    public PurchaseConfirmationDialog(Frame parent, long phoneId, String manufacturer, String phoneName, int ram, int storage, int price, int quantity, int total) {
+    public PurchaseConfirmationDialog(Frame parent, long cartId, long buyerId, long phoneId, String manufacturer, String phoneName, int ram, int storage, int price, int quantity, int total) {
         super(parent, "구매 확인", true);
         setSize(400, 300);
         setLocationRelativeTo(parent);
@@ -17,9 +21,11 @@ public class PurchaseConfirmationDialog extends JDialog {
         infoPanel.add(new JLabel("제품ID: " + phoneId));
         infoPanel.add(new JLabel("제조사: " + manufacturer));
         infoPanel.add(new JLabel("제품명: " + phoneName));
-        infoPanel.add(new JLabel("가격: " + price + "원"));
-        infoPanel.add(new JLabel("수량: " + quantity));
-        infoPanel.add(new JLabel("총액: " + total + "원"));
+        infoPanel.add(new JLabel("RAM:  " + ram + " GB"));
+        infoPanel.add(new JLabel("용량:  " + storage + " GB"));
+        infoPanel.add(new JLabel("가격:  " + price + " 원"));
+        infoPanel.add(new JLabel("수량:  " + quantity + " 개"));
+        infoPanel.add(new JLabel("총액:  " + total + " 원"));
         add(infoPanel, BorderLayout.CENTER);
 
         // 하단 버튼 패널
@@ -33,8 +39,13 @@ public class PurchaseConfirmationDialog extends JDialog {
         // "예" 버튼 클릭 시 구매 프로세스 진행 (여기서는 단순 메시지로 처리)
         yesButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                // 구매 로직(DAO 연동 등)을 구현한 후 처리
-                JOptionPane.showMessageDialog(PurchaseConfirmationDialog.this, "구매가 완료되었습니다.");
+                PurchaseHistoryDao phDao = new PurchaseHistoryDao();
+                boolean success = phDao.processPurchase(cartId, buyerId, phoneId, price, quantity);
+                if(success) {
+                    JOptionPane.showMessageDialog(PurchaseConfirmationDialog.this, "구매가 완료되었습니다.");
+                } else {
+                    JOptionPane.showMessageDialog(PurchaseConfirmationDialog.this, "구매 처리에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                }
                 dispose();
             }
         });
