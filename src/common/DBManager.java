@@ -6,7 +6,7 @@ import java.sql.*;
 // ResultSet, PreparedStatement, Connection 객체 종료 close()
 public class DBManager {
 
-	static String url = "jdbc:mysql://localhost:3306/madang";
+	static String url = "jdbc:mysql://localhost:3306/phonepale";
 	static String user = "root";
 	static String pwd = "";
 	
