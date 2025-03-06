@@ -3,25 +3,26 @@ package dto;
 import java.time.LocalDateTime;
 
 public class User {
-    private int userId;     // auto-increment
+    private long userId;     // auto-increment
     private String userName;
     private String role;    // buyer or seller
-    private LocalDateTime createdAt;    // auto-created by NOW() in mysql
+    private LocalDateTime createdAt;    // auto-created default by NOW() in mysql
 
     public User() {}
+
     public User(String userName, String role) {
         this.userName = userName;
         this.role = role;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
     // auto-increment
-    // public void setUserId(int userId) {
-    //     this.userId = userId;
-    // }
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public String getUserName() {
         return userName;
@@ -43,8 +44,8 @@ public class User {
         return createdAt;
     }
 
-    // auto-created by NOW() in mysql
-    // public void setCreatedAt(LocalDateTime createdAt) {
-    //     this.createdAt = createdAt;
-    // }
+    // auto-created default by NOW() in mysql
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
