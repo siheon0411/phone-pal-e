@@ -65,7 +65,7 @@ public class CartDao {
         return ret;
     }
 
-    // Connection을 인자로 받도록 오버로드
+    // Connection을 인자로 받도록 오버로드, 이 메소드에선 Connection 닫지 않음
     public int deleteCart(Connection con, long cartId) {
         int ret = -1;
 
@@ -74,7 +74,6 @@ public class CartDao {
         PreparedStatement pstmt = null;
 
         try {
-            con = DBManager.getConnection();
             pstmt = con.prepareStatement(sql);
 
             pstmt.setLong(1, cartId);
@@ -84,7 +83,8 @@ public class CartDao {
         }catch(SQLException e) {
             e.printStackTrace();
         }finally {
-            DBManager.releaseConnection(pstmt, con);
+            // Connection은 닫지 않고, pstmt만 닫음
+            DBManager.releaseConnection(pstmt, null);
         }
 
         return ret;

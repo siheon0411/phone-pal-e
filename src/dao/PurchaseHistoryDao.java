@@ -40,7 +40,7 @@ public class PurchaseHistoryDao {
         return ret;
     }
 
-    // Connection을 인자로 받도록 오버로드
+    // Connection을 인자로 받도록 오버로드, 이 메소드에선 Connection 닫지 않음
     public int insertPurchaseHistory(Connection con, long buyerId, long phoneId, int purchasePrice, int purchaseQuantity) {
         int ret = -1;
         String sql = "insert into purchasehistory values (DEFAULT, ?, ?, DEFAULT, ?, ?, DEFAULT); ";
@@ -49,6 +49,7 @@ public class PurchaseHistoryDao {
 
         try {
             pstmt = con.prepareStatement(sql);
+
             pstmt.setLong(1, buyerId);
             pstmt.setLong(2, phoneId);
             pstmt.setInt(3, purchasePrice);
@@ -66,7 +67,7 @@ public class PurchaseHistoryDao {
         return ret;
     }
 
-    // 트랜잭션 메서드: 구매 기록 삽입과 장바구니 삭제를 하나의 트랜잭션으로 처리
+    // 트랜잭션 메서드: '구매 기록 삽입'과 '장바구니 삭제'와 '재고수량 및 판매수량 업데이트'를 하나의 트랜잭션으로 처리
     public boolean processPurchase(long cartId, long buyerId, long phoneId, int purchasePrice, int purchaseQuantity) {
         Connection con = null;
 
@@ -77,11 +78,16 @@ public class PurchaseHistoryDao {
             // 1. PurchaseHistory 삽입
             int insertResult = insertPurchaseHistory(con, buyerId, phoneId, purchasePrice, purchaseQuantity);
 
-            // 2. Cart 항목 삭제: CartDao의 deleteCart() 메서드 (Connection을 인자로 받음)
+            // 2. Cart 항목 삭제
             CartDao cartDao = new CartDao();
             int deleteResult = cartDao.deleteCart(con, cartId);
 
-            if (insertResult > 0 && deleteResult > 0) {
+            // 3. Phone 테이블 업데이트: 재고 감소, 판매수량 증가
+            PhoneDao phoneDao = new PhoneDao();
+            int updateResult = phoneDao.updateQuantities(con, phoneId, purchaseQuantity);
+
+
+            if (insertResult > 0 && deleteResult > 0 && updateResult > 0) {
                 con.commit();
                 return true;
             } else {
@@ -133,6 +139,48 @@ public class PurchaseHistoryDao {
                 list.add(phd);
             }
         } catch(SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBManager.releaseConnection(rs, pstmt, con);
+        }
+        return list;
+    }
+
+    // 모든 구매(판매) 기록을 (판매자는 buyer_id에 국한되지 않음) phone 테이블 JOIN하여 조회
+    public List<PurchaseHistoryDetail> listAllPurchaseHistoryDetail() {
+        List<PurchaseHistoryDetail> list = new ArrayList<>();
+        String sql = "SELECT ph.purchase_id, ph.buyer_id, ph.phone_id, ph.purchase_price, ph.purchase_quantity, ph.purchased_at, " +
+                "p.manufacturer, p.phone_name, p.ram, p.storage " +
+                "FROM purchasehistory ph " +
+                "JOIN phone p ON ph.phone_id = p.phone_id " +
+                "ORDER BY ph.purchased_at DESC";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = DBManager.getConnection();
+            pstmt = con.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                PurchaseHistoryDetail phd = new PurchaseHistoryDetail();
+                phd.setPurchaseId(rs.getLong("purchase_id"));
+                phd.setBuyerId(rs.getLong("buyer_id"));
+                phd.setPhoneId(rs.getLong("phone_id"));
+                phd.setPurchasePrice(rs.getInt("purchase_price"));
+                phd.setPurchaseQuantity(rs.getInt("purchase_quantity"));
+                Timestamp ts = rs.getTimestamp("purchased_at");
+                if (ts != null) {
+                    phd.setPurchasedAt(ts.toLocalDateTime());
+                }
+                phd.setManufacturer(rs.getString("manufacturer"));
+                phd.setPhoneName(rs.getString("phone_name"));
+                phd.setRam(rs.getInt("ram"));
+                phd.setStorage(rs.getInt("storage"));
+                list.add(phd);
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             DBManager.releaseConnection(rs, pstmt, con);

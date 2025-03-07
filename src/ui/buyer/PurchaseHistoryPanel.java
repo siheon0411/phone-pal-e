@@ -6,6 +6,7 @@ import dao.PurchaseHistoryDao;
 import dto.PurchaseHistoryDetail;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class PurchaseHistoryPanel extends JPanel {
@@ -53,6 +54,20 @@ public class PurchaseHistoryPanel extends JPanel {
             }
         };
         table = new JTable(tableModel);
+
+        // 열 너비 조정
+        table.getColumnModel().getColumn(0).setPreferredWidth(20);   // 구매ID
+        table.getColumnModel().getColumn(1).setPreferredWidth(20);   // 제품ID
+        table.getColumnModel().getColumn(2).setPreferredWidth(50);   // 제조사
+        table.getColumnModel().getColumn(3).setPreferredWidth(80);   // 제품명
+        table.getColumnModel().getColumn(4).setPreferredWidth(30);   // RAM(GB)
+        table.getColumnModel().getColumn(5).setPreferredWidth(30);   // 용량(GB)
+        table.getColumnModel().getColumn(6).setPreferredWidth(80);   // 구매가격
+        table.getColumnModel().getColumn(7).setPreferredWidth(30);   // 구매수량
+        table.getColumnModel().getColumn(8).setPreferredWidth(130);  // 구매일시
+
+        // table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -70,7 +85,12 @@ public class PurchaseHistoryPanel extends JPanel {
     private void loadPurchaseHistoryData() {
         tableModel.setRowCount(0);
         List<PurchaseHistoryDetail> historyList = phDao.listPurchaseHistoryDetailByBuyerId(buyerId);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for(PurchaseHistoryDetail phd : historyList) {
+            String purchasedAtStr = "";
+            if (phd.getPurchasedAt() != null) {
+                purchasedAtStr = phd.getPurchasedAt().format(dtf);
+            }
             Object[] row = new Object[] {
                     phd.getPurchaseId(),
                     phd.getPhoneId(),
@@ -80,7 +100,7 @@ public class PurchaseHistoryPanel extends JPanel {
                     phd.getStorage(),
                     phd.getPurchasePrice(),
                     phd.getPurchaseQuantity(),
-                    phd.getPurchasedAt() != null ? phd.getPurchasedAt().toString() : ""
+                    purchasedAtStr
             };
             tableModel.addRow(row);
         }

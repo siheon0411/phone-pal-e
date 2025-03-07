@@ -178,5 +178,59 @@ public class PhoneDao {
         return phone;
     }
 
+    // phone_id에 해당하는 재고(stock_quantity)를 조회하는 메서드
+    public int checkStockQuantity(long phoneId) {
+        int stock = 0;
+        String sql = "SELECT stock_quantity FROM phone WHERE phone_id = ?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = DBManager.getConnection();
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setLong(1, phoneId);
+
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                stock = rs.getInt("stock_quantity");
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBManager.releaseConnection(rs, pstmt, con);
+        }
+        return stock;
+    }
+
+    // 지정된 phoneId에 대해 stock_quantity를 구매수량만큼 감소시키고, sales_quantity를 구매수량만큼 증가시키는 메소드
+    // Connection을 인자로 받아 작업하며, 이 메서드 내에서는 Connection을 닫지 않음
+    public int updateQuantities(Connection con, long phoneId, int quantity) {
+        int ret = -1;
+        String sql = "UPDATE phone SET stock_quantity = stock_quantity - ?, sales_quantity = sales_quantity + ? WHERE phone_id = ?";
+
+        PreparedStatement pstmt = null;
+
+        try {
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setInt(1, quantity);
+            pstmt.setInt(2, quantity);
+            pstmt.setLong(3, phoneId);
+
+            ret = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Connection은 닫지 않고, pstmt만 닫음
+            DBManager.releaseConnection(pstmt, null);
+        }
+
+        return ret;
+    }
+
 
 }

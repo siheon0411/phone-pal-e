@@ -1,6 +1,7 @@
 package ui.buyer;
 
 import dao.CartDao;
+import dao.PhoneDao;
 import dao.PurchaseHistoryDao;
 import dto.PurchaseHistory;
 
@@ -39,6 +40,17 @@ public class PurchaseConfirmationDialog extends JDialog {
         // "예" 버튼 클릭 시 구매 프로세스 진행 (여기서는 단순 메시지로 처리)
         yesButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
+                // 먼저 재고 확인
+                PhoneDao phoneDao = new PhoneDao();
+                int availableStock = phoneDao.checkStockQuantity(phoneId);
+                if (quantity > availableStock) {
+                    JOptionPane.showMessageDialog(PurchaseConfirmationDialog.this,
+                            "구매하려는 수량이 재고보다 많습니다.",
+                            "재고 부족", JOptionPane.ERROR_MESSAGE);
+                    return; // 구매 프로세스를 진행하지 않음
+                }
+
+                // 재고가 충분하면 구매 프로세스 진행 (트랜잭션으로 구매 기록 삽입, Cart 삭제, phone 재고 업데이트)
                 PurchaseHistoryDao phDao = new PurchaseHistoryDao();
                 boolean success = phDao.processPurchase(cartId, buyerId, phoneId, price, quantity);
                 if(success) {
