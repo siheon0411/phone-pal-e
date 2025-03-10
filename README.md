@@ -1,3 +1,6 @@
+## ERD
+<img width="724" alt="김시헌_MP1_ERD" src="https://github.com/user-attachments/assets/84c4aaeb-4683-42d7-8ffa-cb8656ee2083" />
+
 ## 판매자 페이지
 <img width="300" alt="Image" src="https://github.com/user-attachments/assets/de0e4982-973a-4927-ac91-d52eaacb74c5" />
 <img width="800" alt="Image" src="https://github.com/user-attachments/assets/67ba82a5-e610-4f4b-9225-9a5953cf8977" />
