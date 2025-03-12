@@ -77,9 +77,9 @@ public class LoginFrame extends JFrame {
                 }
 
                 // 사용자 role에 따라 화면 전환
-                if ("seller".equalsIgnoreCase(user.getRole())) {
+                if ("002".equalsIgnoreCase(user.getRole())) {   // 판매자 (002)
                     new SellerFrame(user).setVisible(true);
-                } else if ("buyer".equalsIgnoreCase(user.getRole())) {
+                } else if ("001".equalsIgnoreCase(user.getRole())) {    // 구매자 (001)
                     new BuyerFrame(user).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(LoginFrame.this, "알 수 없는 사용자 역할입니다.", "오류", JOptionPane.ERROR_MESSAGE);
